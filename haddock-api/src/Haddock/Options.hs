@@ -25,11 +25,13 @@ module Haddock.Options (
   sourceUrls,
   wikiUrls,
   optDumpInterfaceFile,
+  optShowInterfaceFile,
   optLaTeXStyle,
   optMathjax,
   qualification,
   verbosity,
   ghcFlags,
+  reexportFlags,
   readIfaceArgs,
   optPackageName,
   optPackageVersion
@@ -53,6 +55,7 @@ data Flag
 --  | Flag_DocBook
   | Flag_ReadInterface String
   | Flag_DumpInterface String
+  | Flag_ShowInterface String
   | Flag_Heading String
   | Flag_Html
   | Flag_Hoogle
@@ -68,6 +71,7 @@ data Flag
   | Flag_WikiEntityURL String
   | Flag_LaTeX
   | Flag_LaTeXStyle String
+  | Flag_QuickJumpIndex
   | Flag_HyperlinkedSource
   | Flag_SourceCss String
   | Flag_Mathjax String
@@ -96,6 +100,7 @@ data Flag
   | Flag_NoPrintMissingDocs
   | Flag_PackageName String
   | Flag_PackageVersion String
+  | Flag_Reexport String
   deriving (Eq, Show)
 
 
@@ -112,6 +117,8 @@ options backwardsCompat =
       "read an interface from FILE",
     Option ['D']  ["dump-interface"] (ReqArg Flag_DumpInterface "FILE")
       "write the resulting interface to FILE",
+    Option []     ["show-interface"] (ReqArg Flag_ShowInterface "FILE")
+      "print the interface in a human readable form",
 --    Option ['S']  ["docbook"]  (NoArg Flag_DocBook)
 --  "output in DocBook XML",
     Option ['h']  ["html"]     (NoArg Flag_Html)
@@ -122,6 +129,8 @@ options backwardsCompat =
     Option ['U'] ["use-unicode"] (NoArg Flag_UseUnicode) "use Unicode in HTML output",
     Option []  ["hoogle"]     (NoArg Flag_Hoogle)
       "output for Hoogle; you may want --package-name and --package-version too",
+    Option [] ["quickjump"] (NoArg Flag_QuickJumpIndex)
+      "generate an index for interactive documentation navigation",
     Option [] ["hyperlinked-source"] (NoArg Flag_HyperlinkedSource)
       "generate highlighted and hyperlinked source code (for use with --html)",
     Option [] ["source-css"] (ReqArg Flag_SourceCss "FILE")
@@ -190,6 +199,8 @@ options backwardsCompat =
       "generate html with newlines and indenting (for use with --html)",
     Option [] ["no-print-missing-docs"] (NoArg Flag_NoPrintMissingDocs)
       "don't print information about any undocumented entities",
+    Option []  ["reexport"] (ReqArg Flag_Reexport "MOD")
+      "reexport the module MOD, adding it to the index",
     Option [] ["package-name"] (ReqArg Flag_PackageName "NAME")
       "name of the package being documented",
     Option [] ["package-version"] (ReqArg Flag_PackageVersion "VERSION")
@@ -270,6 +281,8 @@ wikiUrls flags =
 optDumpInterfaceFile :: [Flag] -> Maybe FilePath
 optDumpInterfaceFile flags = optLast [ str | Flag_DumpInterface str <- flags ]
 
+optShowInterfaceFile :: [Flag] -> Maybe FilePath
+optShowInterfaceFile flags = optLast [ str | Flag_ShowInterface str <- flags ]
 
 optLaTeXStyle :: [Flag] -> Maybe String
 optLaTeXStyle flags = optLast [ str | Flag_LaTeXStyle str <- flags ]
@@ -303,6 +316,9 @@ verbosity flags =
 
 ghcFlags :: [Flag] -> [String]
 ghcFlags flags = [ option | Flag_OptGhc option <- flags ]
+
+reexportFlags :: [Flag] -> [String]
+reexportFlags flags = [ option | Flag_Reexport option <- flags ]
 
 
 readIfaceArgs :: [Flag] -> [(DocPaths, FilePath)]

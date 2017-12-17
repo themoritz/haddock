@@ -20,10 +20,11 @@ module Haddock.Utils (
 
   -- * Filename utilities
   moduleHtmlFile, moduleHtmlFile',
-  contentsHtmlFile, indexHtmlFile,
+  contentsHtmlFile, indexHtmlFile, indexJsonFile,
   moduleIndexFrameName, mainFrameName, synopsisFrameName,
   subIndexHtmlFile,
-  jsFile,
+  haddockJsFile, jsQuickJumpFile,
+  quickJumpCssFile,
 
   -- * Anchor and URL utilities
   moduleNameUrl, moduleNameUrl', moduleUrl,
@@ -254,9 +255,10 @@ moduleHtmlFile' mdl =
     Just fp0 -> HtmlPath.joinPath [fp0, baseName mdl ++ ".html"]
 
 
-contentsHtmlFile, indexHtmlFile :: String
+contentsHtmlFile, indexHtmlFile, indexJsonFile :: String
 contentsHtmlFile = "index.html"
 indexHtmlFile = "doc-index.html"
+indexJsonFile = "doc-index.json"
 
 
 
@@ -324,9 +326,14 @@ makeAnchorId (f:r) = escape isAlpha f ++ concatMap (escape isLegal) r
 -------------------------------------------------------------------------------
 
 
-jsFile :: String
-jsFile    = "haddock-util.js"
+haddockJsFile :: String
+haddockJsFile = "haddock-bundle.min.js"
 
+jsQuickJumpFile :: String
+jsQuickJumpFile = "quick-jump.min.js"
+
+quickJumpCssFile :: String
+quickJumpCssFile = "quick-jump.css"
 
 -------------------------------------------------------------------------------
 -- * Misc.
